@@ -48,7 +48,7 @@ class HttpServicer(repository_pb2_grpc.HttpServicer):
 
     async def Webhook(
         self,
-        request: WebhookRequest,
+        request: HttpBody,
         grpc_context: grpc.aio.ServicerContext,
     ) -> HttpBody:
 
