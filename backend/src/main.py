@@ -9,7 +9,6 @@ from github.v1.repository_rsm import (
     Repository,
     AttachRequest,
     AttachResponse,
-    WebhookRequest,
 )
 from google.api.httpbody_pb2 import HttpBody
 from resemble.aio.applications import Application
@@ -24,11 +23,25 @@ if "GITHUB_WEBHOOK_TOKEN" not in os.environ:
     sys.exit(1)
 
 GITHUB_WEBHOOK_TOKEN = os.environ["GITHUB_WEBHOOK_TOKEN"]
+
+if "GITHUB_WEBHOOK_OWNER" not in os.environ:
+    print("Expected GITHUB_WEBHOOK_OWNER env var is missing", file=sys.stderr)
+    sys.exit(1)
+
+GITHUB_WEBHOOK_OWNER = os.environ["GITHUB_WEBHOOK_OWNER"]
+
+if "GITHUB_WEBHOOK_REPO" not in os.environ:
+    print("Expected GITHUB_WEBHOOK_REPO env var is missing", file=sys.stderr)
+    sys.exit(1)
+
+GITHUB_WEBHOOK_REPO = os.environ["GITHUB_WEBHOOK_REPO"]
+
+if "CODESPACE_NAME" not in os.environ:
+    print("Expected CODESPACE_NAME env var is missing", file=sys.stderr)
+    sys.exit(1)
+
 CODESPACE_NAME = os.environ["CODESPACE_NAME"]
 WEBHOOK_URL = f"https://{CODESPACE_NAME}-9991.app.github.dev/github/v1/repository/webhook"
-
-OWNER = 'benh'
-REPO = 'resemble-hello'
 
 
 class RepositoryServicer(Repository.Interface):
@@ -90,7 +103,12 @@ def register_webhook():
         }
     }
 
-    conn.request("POST", f"/repos/{OWNER}/{REPO}/hooks", body=json.dumps(payload), headers=headers)
+    conn.request(
+        "POST",
+        f"/repos/{GITHUB_WEBHOOK_OWNER}/{GITHUB_WEBHOOK_REPO}/hooks",
+        body=json.dumps(payload),
+        headers=headers,
+    )
     response = conn.getresponse()
     response_data = response.read().decode()
 
