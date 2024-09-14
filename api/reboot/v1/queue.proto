@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package reboot.v1;
+
+import "resemble/v1alpha1/options.proto";
+
+////////////////////////////////////////////////////////////////////////
+
+service QueueInterface {
+  rpc Push(PushRequest) returns (PushResponse) {
+    option (resemble.v1alpha1.method) = {
+      transaction: {},
+    };
+  }
+
+  rpc GetFor(GetForRequest) returns (GetForResponse) {
+    option (resemble.v1alpha1.method) = {
+      transaction: {},
+    };
+  }
+
+  rpc PopFor(PopForRequest) returns (PopForResponse) {
+    option (resemble.v1alpha1.method) = {
+      transaction: {},
+    };
+  }
+
+  rpc Status(StatusRequest) returns (StatusResponse) {
+    option (resemble.v1alpha1.method) = {
+      reader: {},
+    };
+  }
+}
+
+////////////////////////////////////////////////////////////////////////
+
+message Queue {
+  option (.resemble.v1alpha1.state) = {
+  };
+
+  // `SortedMap` of items in the queue.
+  string items_id = 1;
+
+  // Map from arbitrary string IDs to a key in the queue representing
+  // an item that has been gotten by that ID.
+  map<string, string> gotten_key_for_id = 2;
+
+  // First available key that can be gotten.
+  string first_available_key = 3;
+}
+
+////////////////////////////////////////////////////////////////////////
+
+message PushRequest {
+  bytes value = 1;
+}
+
+message PushResponse {}
+
+////////////////////////////////////////////////////////////////////////
+
+message GetForRequest {
+  string for_id = 1;
+}
+
+message GetForResponse {
+  optional bytes value = 1;
+}
+
+////////////////////////////////////////////////////////////////////////
+
+message PopForRequest {
+  string for_id = 1;
+}
+
+message PopForResponse {}
+
+////////////////////////////////////////////////////////////////////////
+
+message StatusRequest {}
+
+message StatusResponse {
+  bool empty = 1;
+}
+
+////////////////////////////////////////////////////////////////////////
